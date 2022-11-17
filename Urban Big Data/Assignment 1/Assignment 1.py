@@ -1,8 +1,10 @@
 import csv
+import numpy as np
 from collections import Counter
 import matplotlib.pyplot as plt
 from datetime import datetime, date, timedelta
 from math import radians, sin, cos, atan2, sqrt
+from distfit import distfit
 
 def Haversine(Lat1, Long1, Lat2, Long2):
     Lat1, Long1, Lat2, Long2 = map(radians, [Lat1, Long1, Lat2, Long2])
@@ -30,8 +32,7 @@ Departure = []
 Arrival = []
 TripDistance = []
 Index = 0
-#Date1 = {"Month": 3, "Day": 11}
-Date1 = {"Month": 1, "Day": 1}
+Date1 = {"Month": 3, "Day": 11}
 Date2 = {"Month": 4, "Day": 7}
 Date3 = {"Month": 11, "Day": 28}
 Date1TripsHour = []
@@ -62,9 +63,11 @@ for Line in RawData:
     TripDistance.append(int(Dist))
     Index += 1
     print(Index)
-    if Index >= 100000:
-        break
+    #if Index >= 100000:
+        #break
 File.close()
+'''
+plt.ioff()
 #Q1
 TripsPerTaxi = list(Counter(Taxi_id).items())
 print("Unique Taxis:")
@@ -120,29 +123,40 @@ plt.show()
 Date1Trips = list(Counter(Date1TripsHour).items())
 Date1Trips_Hour = [_[0] for _ in Date1Trips]
 Date1Trips_Num = [_[1] for _ in Date1Trips]
-#Date2Trips = list(Counter(Date2TripsHour).items())
-#Date2Trips_Hour = [_[0] for _ in Date2Trips]
-#Date2Trips_Num = [_[1] for _ in Date2Trips]
-#Date3Trips = list(Counter(Date3TripsHour).items())
-#Date3Trips_Hour = [_[0] for _ in Date3Trips]
-#Date3Trips_Num = [_[1] for _ in Date3Trips]
-#plt.bar(Date1Trips_Hour, Date1Trips_Num, width=1)
-#plt.xlabel("Hour")
-#plt.ylabel("Trips")
-#plt.title("Trip Distribution in Mar. 11")
-#plt.show()
-#plt.bar(Date2Trips_Hour, Date2Trips_Num, width=1)
-#plt.xlabel("Hour")
-#plt.ylabel("Trips")
-#plt.title("Trip Distribution in Apr. 7")
-#plt.show()
-#plt.bar(Date3Trips_Hour, Date3Trips_Num, width=1)
-#plt.xlabel("Hour")
-#plt.ylabel("Trips")
-#plt.title("Trip Distribution in Nov. 28")
-#plt.show()
+Date2Trips = list(Counter(Date2TripsHour).items())
+Date2Trips_Hour = [_[0] for _ in Date2Trips]
+Date2Trips_Num = [_[1] for _ in Date2Trips]
+Date3Trips = list(Counter(Date3TripsHour).items())
+Date3Trips_Hour = [_[0] for _ in Date3Trips]
+Date3Trips_Num = [_[1] for _ in Date3Trips]
+plt.bar(Date1Trips_Hour, Date1Trips_Num, width=1)
+plt.xlabel("Hour")
+plt.ylabel("Trips")
+plt.title("Trip Distribution in Mar. 11")
+plt.show()
+plt.bar(Date2Trips_Hour, Date2Trips_Num, width=1)
+plt.xlabel("Hour")
+plt.ylabel("Trips")
+plt.title("Trip Distribution in Apr. 7")
+plt.show()
+plt.bar(Date3Trips_Hour, Date3Trips_Num, width=1)
+plt.xlabel("Hour")
+plt.ylabel("Trips")
+plt.title("Trip Distribution in Nov. 28")
+plt.show()
+'''
 #Q6
+Dist = distfit(todf=True)
+Dist.fit_transform(np.array(TripDistance))
+print(Dist.model)
+Dist.plot()
+plt.show()
 
-test = 1
-
-
+TripDistance = list(Counter(TripDistance).items())
+TripDistance_Dist = [_[0] for _ in TripDistance]
+TripDistance_Trips = [_[1] for _ in TripDistance]
+plt.bar(TripDistance_Dist, TripDistance_Trips, width=10)
+plt.xlabel("Distance (m)")
+plt.ylabel("Trips")
+plt.title("Trip Distance Distribution")
+plt.show()
