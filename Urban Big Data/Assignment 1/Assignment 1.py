@@ -31,6 +31,7 @@ Trips = 0
 Departure = []
 Arrival = []
 TripDistance = []
+TripTime = []
 Index = 0
 Date1 = {"Month": 3, "Day": 11}
 Date2 = {"Month": 4, "Day": 7}
@@ -41,7 +42,7 @@ Date3TripsHour = []
 for Line in RawData:
     Taxi_id.append(int(Line[0]))
     Trips += 1
-    tDate = datetime.fromtimestamp(int(Line[1]))
+    tDate = datetime.fromtimestamp(int(Line[1]) - 46800)
     if tDate.month == Date1["Month"] and tDate.day == Date1["Day"]:
         Date1TripsHour.append(tDate.hour)
     elif tDate.month == Date2["Month"] and tDate.day == Date2["Day"]:
@@ -61,31 +62,40 @@ for Line in RawData:
     Long2 = IntersectionCoords[Line[4]][1]
     Dist = 1000 * Haversine(Lat1, Long1, Lat2, Long2)
     TripDistance.append(int(Dist))
+    TripTime.append(int(Line[2]) - int(Line[1]))
     Index += 1
     print(Index)
-    #if Index >= 100000:
-        #break
 File.close()
-'''
-plt.ioff()
+
+plt.rc('font', size=20)  # controls default text sizes
+plt.rc('axes', titlesize=20)  # fontsize of the axes title
+plt.rc('axes', labelsize=20)  # fontsize of the x and y labels
+plt.rc('xtick', labelsize=20)  # fontsize of the tick labels
+plt.rc('ytick', labelsize=20)  # fontsize of the tick labels
+plt.rc('legend', fontsize=20)  # legend fontsize
+plt.rc('figure', titlesize=20)  # fontsize of the figure title
+plt.rcParams["font.family"] = "Times New Roman"
+
 #Q1
 TripsPerTaxi = list(Counter(Taxi_id).items())
 print("Unique Taxis:")
 print(len(TripsPerTaxi))
 print("Trips:")
 print(Trips)
+
 #Q2
 TripsPerTaxi_ID = [_[0] for _ in TripsPerTaxi]
 TripsPerTaxi_Num = [_[1] for _ in TripsPerTaxi]
 MaxTrips = max(TripsPerTaxi_Num)
 TopPerformers = [_[1] for _ in list(enumerate(TripsPerTaxi_ID)) if TripsPerTaxi_Num[_[0]] == MaxTrips]
-plt.bar(TripsPerTaxi_ID, TripsPerTaxi_Num, width=1)
+plt.bar(TripsPerTaxi_ID, TripsPerTaxi_Num, width=2)
 plt.xlabel("Taxi ID")
 plt.ylabel("Trips")
 plt.title("Trips per Taxi")
 plt.show()
 print("Top Performers:")
 print(TopPerformers)
+
 #Q3
 DailyTrips = list(Counter(DayNum).items())
 DailyTrips_DayNum = [_[0] for _ in DailyTrips]
@@ -96,6 +106,7 @@ plt.xlabel("Day in The Year")
 plt.ylabel("Daily Trips")
 plt.title("Daily Trip Count")
 plt.show()
+
 #Q4
 DepartureTripNum = list(Counter(Departure).items())
 ArrivalTripNum = list(Counter(Arrival).items())
@@ -109,16 +120,17 @@ DepartureTripNum_Num = [DepartureTripNum_Num[_] for _ in Index]
 Index = sorted(range(len(ArrivalTripNum_ID)), key=lambda i: ArrivalTripNum_ID[i])
 ArrivalTripNum_ID = sorted(ArrivalTripNum_ID)
 ArrivalTripNum_Num = [ArrivalTripNum_Num[_] for _ in Index]
-plt.bar(DepartureTripNum_ID, DepartureTripNum_Num, width=1)
+plt.bar(DepartureTripNum_ID, DepartureTripNum_Num, width=2)
 plt.xlabel("Intersection ID")
 plt.ylabel("Depature Trips")
 plt.title("Depature Trip Distribution among Intersections")
 plt.show()
-plt.bar(ArrivalTripNum_ID, ArrivalTripNum_Num, width=1)
+plt.bar(ArrivalTripNum_ID, ArrivalTripNum_Num, width=2)
 plt.xlabel("Intersection ID")
 plt.ylabel("Arrival Trips")
 plt.title("Arrival Trip Distribution among Intersections")
 plt.show()
+
 #Q5
 Date1Trips = list(Counter(Date1TripsHour).items())
 Date1Trips_Hour = [_[0] for _ in Date1Trips]
@@ -144,19 +156,33 @@ plt.xlabel("Hour")
 plt.ylabel("Trips")
 plt.title("Trip Distribution in Nov. 28")
 plt.show()
-'''
+
 #Q6
 Dist = distfit(todf=True)
 Dist.fit_transform(np.array(TripDistance))
 print(Dist.model)
 Dist.plot()
 plt.show()
-
 TripDistance = list(Counter(TripDistance).items())
 TripDistance_Dist = [_[0] for _ in TripDistance]
 TripDistance_Trips = [_[1] for _ in TripDistance]
 plt.bar(TripDistance_Dist, TripDistance_Trips, width=10)
 plt.xlabel("Distance (m)")
+plt.ylabel("Trips")
+plt.title("Trip Distance Distribution")
+plt.show()
+
+TripTime = [int(i / 60) for i in TripTime]
+Dist = distfit(todf=True)
+Dist.fit_transform(np.array(TripTime))
+print(Dist.model)
+Dist.plot()
+plt.show()
+TripTime = list(Counter(TripTime).items())
+TripTime_Time = [_[0] for _ in TripTime]
+TripTime_Trips = [_[1] for _ in TripTime]
+plt.bar(TripTime_Time, TripTime_Trips, width=10)
+plt.xlabel("Trip Time (min)")
 plt.ylabel("Trips")
 plt.title("Trip Distance Distribution")
 plt.show()
